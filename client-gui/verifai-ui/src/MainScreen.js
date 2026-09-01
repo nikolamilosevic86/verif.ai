@@ -690,13 +690,38 @@ class MainScreen extends Component {
                     
                     let label = result['label']
                   
-                    if (color === "") {
-                        color = (label === "SUPPORT") ? 'green' :
-                                (label === "NO REFERENCE") ? 'gray' :
-                                (label === "NO_EVIDENCE") ? 'orange' :
-                                (label === "CONTRADICT") ? 'red' : '';
-                    } else {
-                        color = "blue"
+                    // prevideli smo da ako ima dve reference u jednoj rečenici da onda ide drugačija logika
+                    //if (color === "") {
+                    //    color = (label === "SUPPORT") ? 'green' :
+                    //            (label === "NO REFERENCE") ? 'gray' :
+                    //                (label === "NO_EVIDENCE") ? 'orange' :
+                    //                (label === "CONTRADICT") ? 'red' : '';
+                    //} else {
+                    //    color = "blue"
+                    //}
+
+                    if (label === "CONTRADICT") {
+                        color = "red";
+                    }
+                    else if (label === "NO_EVIDENCE") {
+                        // Ako već postoji CONTRADICT, ostaje crveno.
+                        // U svim ostalim slučajevima NO_EVIDENCE znači orange.
+                        if (color !== "red") {
+                            color = "orange";
+                        }
+                    }
+                    else if (label === "SUPPORT") {
+                        // SUPPORT daje zeleno samo ako prethodno
+                        // nije pronađen NO_EVIDENCE ili CONTRADICT.
+                        // Sme da prepiše "gray" (NO REFERENCE), jer je SUPPORT jači signal.
+                        if (color === "" || color === "gray") {
+                            color = "green";
+                        }
+                    }
+                    else if (label === "NO REFERENCE") {
+                        if (color === "") {
+                            color = "gray";
+                        }
                     }
             
                     let ballHtml = (label === "SUPPORT") ? '  <span class="green-ball"></span>' :
@@ -709,10 +734,10 @@ class MainScreen extends Component {
                     let foundDocument;
 
                     document_found.forEach(doc => {
-                        if(doc.location === pmid)
-                         {  
+                        if(doc.pmid === pmid || doc.location === pmid)
+                         {
                              foundDocument = doc;
-                             
+
                          }
 
                     })

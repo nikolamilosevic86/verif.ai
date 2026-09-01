@@ -47,9 +47,11 @@ def find_max_similarity_and_count(splits: list, sentence: str, documents: dict, 
         if current_sentence != sentence_to_check:
             break
 
-        # Calculate similarity score
-        similarity_score = calculate_similarity(sentence, documents[pmid_to_check]['text'], sentence_model)
-        max_similarity = max(max_similarity, similarity_score)
+        # Calculate similarity score, skipping references the model hallucinated
+        # (a cited pmid that isn't among the retrieved documents)
+        if pmid_to_check in documents:
+            similarity_score = calculate_similarity(sentence, documents[pmid_to_check]['text'], sentence_model)
+            max_similarity = max(max_similarity, similarity_score)
         count += 1
         j += step
 
